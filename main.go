@@ -2,5 +2,7 @@ package main
 
 func main() {
 	engin := MakeWebHandler()
-	engin.Run(":8080")
+	if err := engin.Run(":8080"); err != nil {
+		panic(err)
+	}
 }
