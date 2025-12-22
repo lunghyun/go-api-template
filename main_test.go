@@ -57,7 +57,7 @@ func TestGetStudentHandler(t *testing.T) {
 func TestPostStudentHandler(t *testing.T) {
 	asserts := assert.New(t)
 
-	var student student.Student
+	var content student.Student
 	muxes := MakeWebHandler()
 	res := httptest.NewRecorder()
 	req := httptest.NewRequest("POST", "/students",
@@ -71,10 +71,10 @@ func TestPostStudentHandler(t *testing.T) {
 
 	muxes.ServeHTTP(res, req)
 	asserts.Equal(http.StatusOK, res.Code)
-	err := json.NewDecoder(res.Body).Decode(&student)
+	err := json.NewDecoder(res.Body).Decode(&content)
 	asserts.Nil(err)
-	asserts.Equal("ccc", student.Name)
-	asserts.Equal(78, student.Score)
+	asserts.Equal("ccc", content.Name)
+	asserts.Equal(78, content.Score)
 }
 
 func TestDeleteStudentHandler(t *testing.T) {
