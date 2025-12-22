@@ -2,10 +2,10 @@ package student
 
 // Student 학생 정보
 type Student struct {
-	Id    int
-	Name  string
-	Age   int
-	Score int
+	Id    int    `json:"id,omitempty"`
+	Name  string `json:"name"`
+	Age   int    `json:"age"`
+	Score int    `json:"score,omitempty"`
 }
 
 // Students 학생 목록 (정렬을 위한 커스텀 타입)

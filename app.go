@@ -1,19 +1,16 @@
 package main
 
 import (
-	"net/http"
-
 	"mustHaveGoRest/student"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
 // MakeWebHandler 웹 핸들러 초기화
-func MakeWebHandler() http.Handler {
-	muxes := mux.NewRouter()
-
+func MakeWebHandler() *gin.Engine {
+	engin := gin.Default()
 	// 각 도메인 라우팅 등록
-	student.RegisterRoutes(muxes)
+	student.RegisterRoutes(engin)
 
-	return muxes
+	return engin
 }

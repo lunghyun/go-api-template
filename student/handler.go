@@ -1,63 +1,68 @@
 package student
 
 import (
-	"encoding/json"
 	"net/http"
 	"sort"
 	"strconv"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
-// GetListHandler 학생 목록 조회 핸들러
-func GetListHandler(w http.ResponseWriter, r *http.Request) {
+// GetStudentsHandler 학생 목록 조회 핸들러
+func GetStudentsHandler(c *gin.Context) {
 	list := make(Students, 0)
 	for _, student := range students {
 		list = append(list, student)
 	}
-	sort.Sort(list) // Id 기준 정렬
-
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(list)
+	sort.Sort(list)             // Id 기준 정렬
+	c.JSON(http.StatusOK, list) // json 포멧 변환
 }
 
-// GetHandler 특정 학생 조회 핸들러
-func GetHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, _ := strconv.Atoi(vars["id"])
-	student, ok := students[id]
-	if !ok {
-		w.WriteHeader(http.StatusNotFound)
+// GetStudentHandler 특정 학생 조회 핸들러
+func GetStudentHandler(c *gin.Context) {
+	idstr := c.Params.ByName("id")
+	if idstr == "" {
+		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(student)
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	student, ok := students[id]
+	if !ok {
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+	c.JSON(http.StatusOK, student)
 }
 
-// PostHandler 학생 추가 핸들러
-func PostHandler(w http.ResponseWriter, r *http.Request) {
+// PostStudentHandler 학생 추가 핸들러
+func PostStudentHandler(c *gin.Context) {
 	var student Student
-	err := json.NewDecoder(r.Body).Decode(&student)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+	if err := c.ShouldBindJSON(&student); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	lastId++
 	student.Id = lastId
 	students[lastId] = student
-	w.WriteHeader(http.StatusCreated)
+	c.String(http.StatusCreated, "Success to add id: %d", lastId)
 }
 
-// DeleteHandler 학생 삭제 핸들러
-func DeleteHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, _ := strconv.Atoi(vars["id"])
-	_, ok := students[id]
-	if !ok {
-		w.WriteHeader(http.StatusNotFound) // id가 키인 학생이 없으면 에러
+// DeleteStudentHandler 학생 삭제 핸들러
+func DeleteStudentHandler(c *gin.Context) {
+	idstr := c.Params.ByName("id")
+	if idstr == "" {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
 	delete(students, id)
-	w.WriteHeader(http.StatusOK)
+	c.String(http.StatusOK, "Success to delete id: %d", id)
 }
