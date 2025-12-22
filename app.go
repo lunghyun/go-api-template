@@ -9,8 +9,14 @@ import (
 // MakeWebHandler 웹 핸들러 초기화
 func MakeWebHandler() *gin.Engine {
 	engin := gin.Default()
+
+	// di
+	repo := student.NewRepository()
+	service := student.NewService(repo)
+	handler := student.NewHandler(service)
+
 	// 각 도메인 라우팅 등록
-	student.RegisterRoutes(engin)
+	handler.RegisterRoutes(engin)
 
 	return engin
 }

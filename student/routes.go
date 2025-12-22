@@ -5,13 +5,13 @@ import (
 )
 
 // RegisterRoutes student 라우팅 등록
-func RegisterRoutes(g *gin.Engine) {
+func (h *Handler) RegisterRoutes(g *gin.Engine) {
 	//r.HandleFunc("/students", GetListHandler).Methods("GET")
-	g.GET("/students", GetStudentsHandler)
+	g.GET("/students", h.GetStudentsHandler)
 	//r.HandleFunc("/students/{id:[0-9]+}", GetHandler).Methods("GET")
-	g.GET("/students/:id", GetStudentHandler)
+	g.GET("/students/:id", h.GetStudentHandler)
 	//r.HandleFunc("/students", PostHandler).Methods("POST")
-	g.POST("/students", PostStudentHandler)
+	g.POST("/students", h.PostStudentHandler)
 	//r.HandleFunc("/students/{id:[0-9]+}", DeleteHandler).Methods("DELETE")
-	g.DELETE("/students/:id", DeleteStudentHandler)
+	g.DELETE("/students/:id", h.DeleteStudentHandler)
 }

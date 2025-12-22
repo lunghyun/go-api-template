@@ -1,21 +1,64 @@
 package student
 
-// [SRP 위반] 전역 변수로 데이터 관리 → 캡슐화 없음
-// [DIP 위반] 구체적인 구현(map)만 존재, 추상화(Repository Interface) 없음
-// [동시성 문제] 전역 변수에 여러 goroutine이 동시 접근 시 race condition 발생
-//
-// 개선 방안:
-// 1. Repository Interface 정의로 추상화 (DIP)
-// 2. InMemoryRepository 구조체로 캡슐화 (SRP)
-// 3. sync.RWMutex로 동시성 보장 (동시성 안전)
-// 4. 테스트 시 Mock Repository 주입 가능 (DIP)
-var students map[int]Student // 학생 목록
-var lastId int               // 마지막 학생 ID
+import "sync"
 
-// init 패키지 초기화 시 자동 실행
-func init() {
-	students = make(map[int]Student)
-	students[1] = Student{1, "aaa", 16, 87}
-	students[2] = Student{2, "bbb", 18, 98}
-	lastId = 2
+type Repository struct {
+	students map[int]Student
+	lastId   int
+	mutex    sync.RWMutex
+}
+
+func NewRepository() *Repository {
+	repo := &Repository{
+		students: make(map[int]Student),
+		lastId:   2,
+	}
+	// 초기 데이터
+	repo.students[1] = Student{1, "aaa", 16, 87}
+	repo.students[2] = Student{2, "bbb", 18, 98}
+	return repo
+}
+
+// GetAll 전체 조회
+func (repo *Repository) GetAll() Students {
+	repo.mutex.RLock()
+	defer repo.mutex.RUnlock()
+
+	list := make(Students, 0, len(repo.students))
+	for _, v := range repo.students {
+		list = append(list, v)
+	}
+	return list
+}
+
+// GetById Id로 조회
+func (repo *Repository) GetById(id int) (Student, bool) {
+	repo.mutex.RLock()
+	defer repo.mutex.RUnlock()
+
+	s, ok := repo.students[id]
+	return s, ok
+}
+
+// Create 학생 추가
+func (repo *Repository) Create(s Student) Student {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
+
+	repo.lastId++
+	s.Id = repo.lastId
+	repo.students[repo.lastId] = s
+	return s
+}
+
+// Delete 학생 삭제
+func (repo *Repository) Delete(id int) bool {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
+
+	if _, ok := repo.students[id]; !ok {
+		return false
+	}
+	delete(repo.students, id)
+	return true
 }
