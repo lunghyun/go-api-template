@@ -43,10 +43,10 @@ func (s Student) Validate() error {
 		return fmt.Errorf("invalid name: name is required")
 	}
 	if s.Age < MinAge || s.Age > MaxAge {
-		return fmt.Errorf("invalid age: must be between %d and %d, got %d", MinAge, MaxAge, s.Age)
+		return fmt.Errorf("invalid age: !(%d <= %d <= %d)", MinAge, s.Age, MaxAge)
 	}
 	if s.Score < MinScore || s.Score > MaxScore {
-		return fmt.Errorf("invalid score: must be between %d and %d, got %d", MinScore, MaxScore, s.Score)
+		return fmt.Errorf("invalid score: !(%d <= %d <= %d)", MinScore, s.Score, MaxScore)
 	}
 	return nil
 }

@@ -1,9 +1,8 @@
 package main
 
 import (
-	"github.com/lunghyun/go-api-template/student"
-
 	"github.com/gin-gonic/gin"
+	"github.com/lunghyun/go-api-template/domain/student"
 )
 
 // MakeWebHandler 웹 핸들러 초기화
