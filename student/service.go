@@ -6,11 +6,11 @@ import (
 )
 
 type Service struct {
-	repository *Repository
+	repository Repository
 }
 
 // NewService 생성자
-func NewService(r *Repository) *Service {
+func NewService(r Repository) *Service {
 	return &Service{repository: r}
 }
 

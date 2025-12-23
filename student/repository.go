@@ -5,14 +5,21 @@ import (
 	"sync"
 )
 
-type Repository struct {
+type Repository interface {
+	FindAll() Students
+	FindById(id int) (Student, error)
+	Create(s Student) Student
+	DeleteById(id int) error
+}
+
+type memoryRepository struct {
 	students map[int]Student
 	lastId   int
 	mutex    sync.RWMutex
 }
 
-func NewRepository() *Repository {
-	repo := &Repository{
+func NewRepository() Repository {
+	repo := &memoryRepository{
 		students: make(map[int]Student),
 		lastId:   2,
 	}
@@ -23,7 +30,7 @@ func NewRepository() *Repository {
 }
 
 // FindAll 전체 조회
-func (r *Repository) FindAll() Students {
+func (r *memoryRepository) FindAll() Students {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -35,7 +42,7 @@ func (r *Repository) FindAll() Students {
 }
 
 // FindById Id로 조회
-func (r *Repository) FindById(id int) (Student, error) {
+func (r *memoryRepository) FindById(id int) (Student, error) {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -47,7 +54,7 @@ func (r *Repository) FindById(id int) (Student, error) {
 }
 
 // Create 학생 추가
-func (r *Repository) Create(s Student) Student {
+func (r *memoryRepository) Create(s Student) Student {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
@@ -58,7 +65,7 @@ func (r *Repository) Create(s Student) Student {
 }
 
 // DeleteById id를 통한 학생 삭제
-func (r *Repository) DeleteById(id int) error {
+func (r *memoryRepository) DeleteById(id int) error {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
