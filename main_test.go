@@ -13,87 +13,87 @@ import (
 )
 
 func TestGetStudentsHandler(t *testing.T) {
-	asserts := assert.New(t)
+	assertion := assert.New(t)
 
 	res := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/students", nil)
 
-	mux := MakeWebHandler()
-	mux.ServeHTTP(res, req)
+	engin := MakeWebHandler()
+	engin.ServeHTTP(res, req)
 
-	asserts.Equal(http.StatusOK, res.Code)
+	assertion.Equal(http.StatusOK, res.Code)
 	var list student.Students
 	err := json.NewDecoder(res.Body).Decode(&list)
-	asserts.Nil(err)
-	asserts.Equal(2, len(list))
-	asserts.Equal("aaa", list[0].Name)
-	asserts.Equal("bbb", list[1].Name)
+	assertion.Nil(err)
+	assertion.Equal(2, len(list))
+	assertion.Equal("aaa", list[0].Name)
+	assertion.Equal("bbb", list[1].Name)
 }
 
 func TestGetStudentHandler(t *testing.T) {
-	asserts := assert.New(t)
+	assertion := assert.New(t)
 
 	var stu student.Student
-	mux := MakeWebHandler()
+	engin := MakeWebHandler()
 	res := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/students/1", nil)
 
-	mux.ServeHTTP(res, req)
-	asserts.Equal(http.StatusOK, res.Code)
+	engin.ServeHTTP(res, req)
+	assertion.Equal(http.StatusOK, res.Code)
 	err := json.NewDecoder(res.Body).Decode(&stu)
-	asserts.Nil(err)
-	asserts.Equal("aaa", stu.Name)
+	assertion.Nil(err)
+	assertion.Equal("aaa", stu.Name)
 
 	res = httptest.NewRecorder()
 	req = httptest.NewRequest("GET", "/students/2", nil)
 
-	mux.ServeHTTP(res, req)
-	asserts.Equal(http.StatusOK, res.Code)
+	engin.ServeHTTP(res, req)
+	assertion.Equal(http.StatusOK, res.Code)
 	err = json.NewDecoder(res.Body).Decode(&stu)
-	asserts.Nil(err)
-	asserts.Equal("bbb", stu.Name)
+	assertion.Nil(err)
+	assertion.Equal("bbb", stu.Name)
 }
 
 func TestPostStudentHandler(t *testing.T) {
-	asserts := assert.New(t)
+	assertion := assert.New(t)
 
 	var content student.Student
-	muxes := MakeWebHandler()
+	engin := MakeWebHandler()
 	res := httptest.NewRecorder()
 	req := httptest.NewRequest("POST", "/students",
 		strings.NewReader(`{"Id":3,"name":"ccc","Age":20,"Score":78}`))
 
-	muxes.ServeHTTP(res, req)
-	asserts.Equal(http.StatusCreated, res.Code)
+	engin.ServeHTTP(res, req)
+	assertion.Equal(http.StatusCreated, res.Code)
 
 	res = httptest.NewRecorder()
 	req = httptest.NewRequest("GET", "/students/3", nil)
 
-	muxes.ServeHTTP(res, req)
-	asserts.Equal(http.StatusOK, res.Code)
+	engin.ServeHTTP(res, req)
+	assertion.Equal(http.StatusOK, res.Code)
 	err := json.NewDecoder(res.Body).Decode(&content)
-	asserts.Nil(err)
-	asserts.Equal("ccc", content.Name)
-	asserts.Equal(78, content.Score)
+	assertion.Nil(err)
+	assertion.Equal("ccc", content.Name)
+	assertion.Equal(78, content.Score)
 }
 
 func TestDeleteStudentHandler(t *testing.T) {
-	asserts := assert.New(t)
-	muxes := MakeWebHandler()
+	assertion := assert.New(t)
+	engin := MakeWebHandler()
 
 	res := httptest.NewRecorder()
 	req := httptest.NewRequest("DELETE", "/students/1", nil)
-	muxes.ServeHTTP(res, req)
-	asserts.Equal(http.StatusOK, res.Code)
+	engin.ServeHTTP(res, req)
+	assertion.Equal(http.StatusOK, res.Code)
 
 	res = httptest.NewRecorder()
 	req = httptest.NewRequest("GET", "/students", nil)
-	muxes.ServeHTTP(res, req)
-	asserts.Equal(http.StatusOK, res.Code)
+	engin.ServeHTTP(res, req)
+	assertion.Equal(http.StatusOK, res.Code)
 
 	var students student.Students
 	err := json.NewDecoder(res.Body).Decode(&students)
-	asserts.Nil(err)
-	asserts.Equal(1, len(students))
-	asserts.Equal("bbb", students[0].Name)
+	assertion.Nil(err)
+	assertion.Equal(1, len(students))
+	assertion.Equal("bbb", students[0].Name)
 }
