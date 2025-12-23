@@ -38,7 +38,7 @@ func (s *Service) CreateStudent(student Student) (*Student, error) {
 	if student.Age < 0 || student.Age > 150 {
 		return nil, fmt.Errorf("invaild age: 0 !<= %d !< 150", student.Age)
 	}
-	created := s.repository.Create(student)
+	created := s.repository.Save(student)
 	return &created, nil
 }
 

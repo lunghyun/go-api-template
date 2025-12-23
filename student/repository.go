@@ -8,7 +8,7 @@ import (
 type Repository interface {
 	FindAll() Students
 	FindById(id int) (Student, error)
-	Create(s Student) Student
+	Save(s Student) Student
 	DeleteById(id int) error
 }
 
@@ -46,21 +46,26 @@ func (r *memoryRepository) FindById(id int) (Student, error) {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
-	s, ok := r.students[id] // id에 해당하는 키가 없음
-	if !ok {
+	s, exists := r.students[id] // id에 해당하는 키가 없음
+	if !exists {
 		return s, fmt.Errorf("student id(%d) not found", id)
 	}
 	return s, nil
 }
 
-// Create 학생 추가
-func (r *memoryRepository) Create(s Student) Student {
+// Save 학생 생성 및 수정
+func (r *memoryRepository) Save(s Student) Student {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	r.lastId++
-	s.Id = r.lastId
-	r.students[r.lastId] = s
+	// Create id가 비어있을 경우 생성(id == 0) -> id 값 생성하여 lastId로 수정
+	if _, exists := r.students[s.Id]; !exists {
+		r.lastId++
+		s.Id = r.lastId
+	}
+
+	// Update id에 해당하는 키가 있을 경우 수정
+	r.students[s.Id] = s
 	return s
 }
 
@@ -69,7 +74,7 @@ func (r *memoryRepository) DeleteById(id int) error {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	if _, ok := r.students[id]; !ok { // id에 해당하는 키가 없음
+	if _, exists := r.students[id]; !exists { // id에 해당하는 키가 없음
 		return fmt.Errorf("student id(%d) not found", id)
 	}
 	delete(r.students, id)
