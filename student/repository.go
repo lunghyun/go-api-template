@@ -19,8 +19,8 @@ func NewRepository() *Repository {
 	return repo
 }
 
-// GetAll 전체 조회
-func (repo *Repository) GetAll() Students {
+// FindAll 전체 조회
+func (repo *Repository) FindAll() Students {
 	repo.mutex.RLock()
 	defer repo.mutex.RUnlock()
 
@@ -31,8 +31,8 @@ func (repo *Repository) GetAll() Students {
 	return list
 }
 
-// GetById Id로 조회
-func (repo *Repository) GetById(id int) (Student, bool) {
+// FindById Id로 조회
+func (repo *Repository) FindById(id int) (Student, bool) {
 	repo.mutex.RLock()
 	defer repo.mutex.RUnlock()
 
@@ -51,8 +51,8 @@ func (repo *Repository) Create(s Student) Student {
 	return s
 }
 
-// Delete 학생 삭제
-func (repo *Repository) Delete(id int) bool {
+// DeleteById id를 통한 학생 삭제
+func (repo *Repository) DeleteById(id int) bool {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 

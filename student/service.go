@@ -16,14 +16,14 @@ func NewService(repo *Repository) *Service {
 
 // GetStudents 전체 조회 (+ 정렬)
 func (s *Service) GetStudents() Students {
-	list := s.repo.GetAll()
+	list := s.repo.FindAll()
 	sort.Sort(list)
 	return list
 }
 
 // GetStudent id 조회
 func (s *Service) GetStudent(id int) (*Student, error) {
-	student, ok := s.repo.GetById(id)
+	student, ok := s.repo.FindById(id)
 	if !ok {
 		return nil, errors.ErrNotFound
 	}
@@ -44,7 +44,7 @@ func (s *Service) CreateStudent(student Student) (*Student, error) {
 
 // DeleteStudent 학생 삭제
 func (s *Service) DeleteStudent(id int) error {
-	if !s.repo.Delete(id) {
+	if !s.repo.DeleteById(id) {
 		return errors.NotFound("student not found")
 	}
 	return nil
