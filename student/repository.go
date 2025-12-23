@@ -18,7 +18,7 @@ type memoryRepository struct {
 	mutex    sync.RWMutex
 }
 
-func NewRepository() Repository {
+func NewMemRepository() Repository {
 	repo := &memoryRepository{
 		students: make(map[int]Student),
 		lastId:   2,

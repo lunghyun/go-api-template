@@ -11,7 +11,7 @@ func MakeWebHandler() *gin.Engine {
 	engin := gin.Default()
 
 	// di
-	studentRepo := student.NewRepository()
+	studentRepo := student.NewMemRepository()
 	studentService := student.NewService(studentRepo)
 	studentHandler := student.NewHandler(studentService)
 
