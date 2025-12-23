@@ -82,7 +82,7 @@ func TestDeleteStudentHandler(t *testing.T) {
 	muxes := MakeWebHandler()
 
 	res := httptest.NewRecorder()
-	req := httptest.NewRequest("DELETE", "/students/2", nil)
+	req := httptest.NewRequest("DELETE", "/students/1", nil)
 	muxes.ServeHTTP(res, req)
 	asserts.Equal(http.StatusOK, res.Code)
 
@@ -94,6 +94,6 @@ func TestDeleteStudentHandler(t *testing.T) {
 	var students student.Students
 	err := json.NewDecoder(res.Body).Decode(&students)
 	asserts.Nil(err)
-	asserts.Equal(2, len(students))
-	asserts.Equal("ccc", students[1].Name)
+	asserts.Equal(1, len(students))
+	asserts.Equal("bbb", students[0].Name)
 }
