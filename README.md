@@ -11,7 +11,6 @@
 
 - `main`: 프로젝트 개요 및 문서 (코드 없음)
 - `layered`: 3-tier 레이어드 아키텍처 (Handler → Service → Repository)
-- (향후 추가 예정) `clean`, `hexagonal`, `ddd` 등
 
 ## 기술 스택
 
@@ -55,11 +54,6 @@ go test -v
 - **특징:** 전통적인 3계층 구조, 간단하고 직관적
 - **적합:** 중소규모 CRUD API, 빠른 개발
 
-### (향후 추가 예정)
-- **Clean Architecture**: 의존성 역전, 도메인 중심
-- **Hexagonal Architecture**: 포트와 어댑터 패턴
-- **DDD**: 도메인 주도 설계
-
 ## 프로젝트 구조 (layered 브랜치)
 
 ```
@@ -82,10 +76,6 @@ go test -v
 - `sort.Interface` 구현
 - `sync.RWMutex`를 통한 동시성 제어
 - 도메인 모델 검증 (`Validate()` 메서드)
-
-## 라이선스
-
-MIT
 
 ## 기여
 
