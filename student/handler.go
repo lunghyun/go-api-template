@@ -42,7 +42,7 @@ func (h *Handler) GetStudentHandler(c *gin.Context) {
 func (h *Handler) PostStudentHandler(c *gin.Context) {
 	var student Student
 	if err := c.ShouldBindJSON(&student); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	created, err := h.service.CreateStudent(student)
@@ -62,7 +62,7 @@ func (h *Handler) PutStudentHandler(c *gin.Context) {
 	}
 	var student Student
 	if err := c.ShouldBindJSON(&student); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	updated, err := h.service.UpdateStudent(id, student)
@@ -70,7 +70,7 @@ func (h *Handler) PutStudentHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"error": updated})
+	c.JSON(http.StatusOK, updated)
 }
 
 // DeleteStudentHandler 학생 삭제 핸들러
@@ -83,6 +83,7 @@ func (h *Handler) DeleteStudentHandler(c *gin.Context) {
 	}
 	if err = h.service.DeleteStudent(id); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
 	}
 	c.String(http.StatusOK, "Student deleted id: %d", id)
 }

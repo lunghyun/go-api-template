@@ -36,10 +36,10 @@ func (s *Service) CreateStudent(student Student) (*Student, error) {
 		return nil, fmt.Errorf("name is required")
 	}
 	if student.Age < 0 || student.Age > 150 {
-		return nil, fmt.Errorf("invaild age: 0 !< %d !< 150", student.Age)
+		return nil, fmt.Errorf("invalid age: 0 !< %d !< 150", student.Age)
 	}
 	if student.Score < 0 || student.Score > 100 {
-		return nil, fmt.Errorf("invaild score: 0 !< %d !< 100", student.Score)
+		return nil, fmt.Errorf("invalid score: 0 !< %d !< 100", student.Score)
 	}
 
 	student.Id = 0
@@ -50,7 +50,7 @@ func (s *Service) CreateStudent(student Student) (*Student, error) {
 // UpdateStudent 학생 수정
 func (s *Service) UpdateStudent(id int, student Student) (*Student, error) {
 	// id가 존재 여부
-	_, err := s.repository.FindById(student.Id)
+	_, err := s.repository.FindById(id)
 	if err != nil {
 		return nil, err
 	}
@@ -59,10 +59,10 @@ func (s *Service) UpdateStudent(id int, student Student) (*Student, error) {
 		return nil, fmt.Errorf("name is required")
 	}
 	if student.Age < 0 || student.Age > 150 {
-		return nil, fmt.Errorf("invaild age: 0 !< %d !< 150", student.Age)
+		return nil, fmt.Errorf("invalid age: 0 !< %d !< 150", student.Age)
 	}
 	if student.Score < 0 || student.Score > 100 {
-		return nil, fmt.Errorf("invaild score: 0 !< %d !< 100", student.Score)
+		return nil, fmt.Errorf("invalid score: 0 !< %d !< 100", student.Score)
 	}
 	if student.Id == 0 {
 		return nil, fmt.Errorf("id is required")
