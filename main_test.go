@@ -97,3 +97,27 @@ func TestDeleteStudentHandler(t *testing.T) {
 	assertion.Equal(1, len(students))
 	assertion.Equal("bbb", students[0].Name)
 }
+
+func TestPutStudentHandler(t *testing.T) {
+	assertion := assert.New(t)
+	engin := MakeWebHandler()
+
+	var content student.Student
+	res := httptest.NewRecorder()
+	req := httptest.NewRequest("PUT", "/students/1",
+		strings.NewReader(`{"Id":1,"name":"ddd","Age":100,"Score":78}`))
+
+	engin.ServeHTTP(res, req)
+	assertion.Equal(http.StatusOK, res.Code)
+
+	res = httptest.NewRecorder()
+	req = httptest.NewRequest("GET", "/students/1", nil)
+
+	engin.ServeHTTP(res, req)
+	assertion.Equal(http.StatusOK, res.Code)
+	err := json.NewDecoder(res.Body).Decode(&content)
+	assertion.Nil(err)
+	assertion.Equal("ddd", content.Name)
+	assertion.Equal(100, content.Age)
+	assertion.Equal(78, content.Score)
+}

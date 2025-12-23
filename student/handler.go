@@ -53,6 +53,27 @@ func (h *Handler) PostStudentHandler(c *gin.Context) {
 	c.JSON(http.StatusCreated, created)
 }
 
+func (h *Handler) PutStudentHandler(c *gin.Context) {
+	//TODO
+	idStr := c.Params.ByName("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	var student Student
+	if err := c.ShouldBindJSON(&student); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	updated, err := h.service.UpdateStudent(id, student)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"error": updated})
+}
+
 // DeleteStudentHandler 학생 삭제 핸들러
 func (h *Handler) DeleteStudentHandler(c *gin.Context) {
 	idStr := c.Params.ByName("id")

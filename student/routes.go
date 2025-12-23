@@ -12,6 +12,7 @@ func (h *Handler) RegisterRoutes(g *gin.Engine) {
 	g.GET("/students/:id", h.GetStudentHandler)
 	//r.HandleFunc("/students", PostHandler).Methods("POST")
 	g.POST("/students", h.PostStudentHandler)
+	g.PUT("/students/:id", h.PutStudentHandler)
 	//r.HandleFunc("/students/{id:[0-9]+}", DeleteHandler).Methods("DELETE")
 	g.DELETE("/students/:id", h.DeleteStudentHandler)
 }
