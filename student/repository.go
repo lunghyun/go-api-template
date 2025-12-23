@@ -43,12 +43,17 @@ func (r *memoryRepository) FindAll() Students {
 
 // FindById Id로 조회
 func (r *memoryRepository) FindById(id int) (Student, error) {
+	// id validate
+	if id <= 0 {
+		return Student{}, fmt.Errorf("invalid id: %d !> 0", id)
+	}
+
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
 	s, exists := r.students[id] // id에 해당하는 키가 없음
 	if !exists {
-		return s, fmt.Errorf("student id(%d) not found", id)
+		return s, fmt.Errorf("not found id: %d", id)
 	}
 	return s, nil
 }
@@ -71,11 +76,15 @@ func (r *memoryRepository) Save(s Student) Student {
 
 // DeleteById id를 통한 학생 삭제
 func (r *memoryRepository) DeleteById(id int) error {
+	if id <= 0 {
+		return fmt.Errorf("invalid id: %d !> 0", id)
+	}
+
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
 	if _, exists := r.students[id]; !exists { // id에 해당하는 키가 없음
-		return fmt.Errorf("student id(%d) not found", id)
+		return fmt.Errorf("not found id: %d", id)
 	}
 	delete(r.students, id)
 	return nil
