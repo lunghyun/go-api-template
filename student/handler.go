@@ -24,10 +24,10 @@ func (h *Handler) GetStudentsHandler(c *gin.Context) {
 
 // GetStudentHandler 특정 학생 조회 핸들러
 func (h *Handler) GetStudentHandler(c *gin.Context) {
-	idstr := c.Params.ByName("id")
-	id, err := strconv.Atoi(idstr)
+	idStr := c.Params.ByName("id")
+	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	student, err := h.service.GetStudent(id)
@@ -55,10 +55,10 @@ func (h *Handler) PostStudentHandler(c *gin.Context) {
 
 // DeleteStudentHandler 학생 삭제 핸들러
 func (h *Handler) DeleteStudentHandler(c *gin.Context) {
-	idstr := c.Params.ByName("id")
-	id, err := strconv.Atoi(idstr)
+	idStr := c.Params.ByName("id")
+	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	if err = h.service.DeleteStudent(id); err != nil {

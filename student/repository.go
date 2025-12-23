@@ -46,7 +46,7 @@ func (r *memoryRepository) FindById(id int) (Student, error) {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
-	s, ok := r.students[id]
+	s, ok := r.students[id] // id에 해당하는 키가 없음
 	if !ok {
 		return s, fmt.Errorf("student id(%d) not found", id)
 	}
@@ -69,7 +69,7 @@ func (r *memoryRepository) DeleteById(id int) error {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	if _, ok := r.students[id]; !ok {
+	if _, ok := r.students[id]; !ok { // id에 해당하는 키가 없음
 		return fmt.Errorf("student id(%d) not found", id)
 	}
 	delete(r.students, id)

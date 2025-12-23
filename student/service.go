@@ -1,7 +1,7 @@
 package student
 
 import (
-	"mustHaveGoRest/errors"
+	"fmt"
 	"sort"
 )
 
@@ -24,7 +24,7 @@ func (s *Service) GetStudents() Students {
 // GetStudent id 조회
 func (s *Service) GetStudent(id int) (*Student, error) {
 	student, err := s.repository.FindById(id)
-	if err != nil {
+	if err != nil { // id에 해당하는 키가 없음
 		return nil, err
 	}
 	return &student, nil
@@ -33,10 +33,10 @@ func (s *Service) GetStudent(id int) (*Student, error) {
 // CreateStudent 학생 생성
 func (s *Service) CreateStudent(student Student) (*Student, error) {
 	if student.Name == "" {
-		return nil, errors.ErrInvalidName
+		return nil, fmt.Errorf("name is required")
 	}
 	if student.Age < 0 || student.Age > 150 {
-		return nil, errors.ErrInvalidAge
+		return nil, fmt.Errorf("invaild age: 0 !<= %d !< 150", student.Age)
 	}
 	created := s.repository.Create(student)
 	return &created, nil
@@ -44,7 +44,7 @@ func (s *Service) CreateStudent(student Student) (*Student, error) {
 
 // DeleteStudent 학생 삭제
 func (s *Service) DeleteStudent(id int) error {
-	if err := s.repository.DeleteById(id); err != nil {
+	if err := s.repository.DeleteById(id); err != nil { // id에 해당하는 키가 없음
 		return err
 	}
 	return nil
