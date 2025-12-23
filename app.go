@@ -11,12 +11,12 @@ func MakeWebHandler() *gin.Engine {
 	engin := gin.Default()
 
 	// di
-	repo := student.NewRepository()
-	service := student.NewService(repo)
-	handler := student.NewHandler(service)
+	studentRepo := student.NewRepository()
+	studentService := student.NewService(studentRepo)
+	studentHandler := student.NewHandler(studentService)
 
 	// 각 도메인 라우팅 등록
-	handler.RegisterRoutes(engin)
+	studentHandler.RegisterRoutes(engin)
 
 	return engin
 }
