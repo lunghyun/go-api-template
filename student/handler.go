@@ -54,7 +54,6 @@ func (h *Handler) PostStudentHandler(c *gin.Context) {
 }
 
 func (h *Handler) PutStudentHandler(c *gin.Context) {
-	//TODO
 	idStr := c.Params.ByName("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
