@@ -1,6 +1,9 @@
 package student
 
-import "sync"
+import (
+	"fmt"
+	"sync"
+)
 
 type Repository struct {
 	students map[int]Student
@@ -32,12 +35,15 @@ func (r *Repository) FindAll() Students {
 }
 
 // FindById Id로 조회
-func (r *Repository) FindById(id int) (Student, bool) {
+func (r *Repository) FindById(id int) (Student, error) {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
 	s, ok := r.students[id]
-	return s, ok
+	if !ok {
+		return s, fmt.Errorf("student id(%d) not found", id)
+	}
+	return s, nil
 }
 
 // Create 학생 추가
@@ -52,13 +58,13 @@ func (r *Repository) Create(s Student) Student {
 }
 
 // DeleteById id를 통한 학생 삭제
-func (r *Repository) DeleteById(id int) bool {
+func (r *Repository) DeleteById(id int) error {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
 	if _, ok := r.students[id]; !ok {
-		return false
+		return fmt.Errorf("student id(%d) not found", id)
 	}
 	delete(r.students, id)
-	return true
+	return nil
 }
