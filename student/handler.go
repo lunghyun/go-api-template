@@ -24,7 +24,7 @@ func (h *Handler) GetStudentsHandler(c *gin.Context) {
 
 // GetStudentHandler 특정 학생 조회 핸들러
 func (h *Handler) GetStudentHandler(c *gin.Context) {
-	idstr := c.Param("id")
+	idstr := c.Params.ByName("id")
 	id, err := strconv.Atoi(idstr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
