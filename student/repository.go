@@ -20,45 +20,45 @@ func NewRepository() *Repository {
 }
 
 // FindAll 전체 조회
-func (repo *Repository) FindAll() Students {
-	repo.mutex.RLock()
-	defer repo.mutex.RUnlock()
+func (r *Repository) FindAll() Students {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
 
-	list := make(Students, 0, len(repo.students))
-	for _, v := range repo.students {
+	list := make(Students, 0, len(r.students))
+	for _, v := range r.students {
 		list = append(list, v)
 	}
 	return list
 }
 
 // FindById Id로 조회
-func (repo *Repository) FindById(id int) (Student, bool) {
-	repo.mutex.RLock()
-	defer repo.mutex.RUnlock()
+func (r *Repository) FindById(id int) (Student, bool) {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
 
-	s, ok := repo.students[id]
+	s, ok := r.students[id]
 	return s, ok
 }
 
 // Create 학생 추가
-func (repo *Repository) Create(s Student) Student {
-	repo.mutex.Lock()
-	defer repo.mutex.Unlock()
+func (r *Repository) Create(s Student) Student {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
 
-	repo.lastId++
-	s.Id = repo.lastId
-	repo.students[repo.lastId] = s
+	r.lastId++
+	s.Id = r.lastId
+	r.students[r.lastId] = s
 	return s
 }
 
 // DeleteById id를 통한 학생 삭제
-func (repo *Repository) DeleteById(id int) bool {
-	repo.mutex.Lock()
-	defer repo.mutex.Unlock()
+func (r *Repository) DeleteById(id int) bool {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
 
-	if _, ok := repo.students[id]; !ok {
+	if _, ok := r.students[id]; !ok {
 		return false
 	}
-	delete(repo.students, id)
+	delete(r.students, id)
 	return true
 }
