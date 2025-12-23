@@ -1,4 +1,4 @@
-module mustHaveGoRest
+module github.com/lunghyun/go-api-template
 
 go 1.25.0
 

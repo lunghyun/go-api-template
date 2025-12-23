@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"mustHaveGoRest/student"
+	"github.com/lunghyun/go-api-template/student"
 
 	"github.com/stretchr/testify/assert"
 )

@@ -35,7 +35,7 @@ func (s *Service) CreateStudent(student Student) (*Student, error) {
 		return nil, err
 	}
 
-	student.Id = 0
+	student.ID = 0
 	created := s.repository.Save(student)
 	return &created, nil
 }
@@ -51,7 +51,7 @@ func (s *Service) UpdateStudent(id int, student Student) (*Student, error) {
 		return nil, err
 	}
 
-	student.Id = id
+	student.ID = id
 	updated := s.repository.Save(student)
 	return &updated, nil
 }

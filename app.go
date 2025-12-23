@@ -1,7 +1,7 @@
 package main
 
 import (
-	"mustHaveGoRest/student"
+	"github.com/lunghyun/go-api-template/student"
 
 	"github.com/gin-gonic/gin"
 )

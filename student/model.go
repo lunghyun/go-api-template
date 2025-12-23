@@ -2,9 +2,20 @@ package student
 
 import "fmt"
 
+const (
+	// MinAge is the minimum valid age for a student
+	MinAge = 0
+	// MaxAge is the maximum valid age for a student
+	MaxAge = 150
+	// MinScore is the minimum valid score for a student
+	MinScore = 0
+	// MaxScore is the maximum valid score for a student
+	MaxScore = 100
+)
+
 // Student 학생 정보
 type Student struct {
-	Id    int    `json:"id,omitempty"`
+	ID    int    `json:"id,omitempty"`
 	Name  string `json:"name"`
 	Age   int    `json:"age"`
 	Score int    `json:"score,omitempty"`
@@ -23,7 +34,7 @@ func (s Students) Swap(i, j int) {
 }
 
 func (s Students) Less(i, j int) bool {
-	return s[i].Id < s[j].Id
+	return s[i].ID < s[j].ID
 }
 
 // Validate 도메인 규칙
@@ -31,11 +42,11 @@ func (s Student) Validate() error {
 	if s.Name == "" {
 		return fmt.Errorf("invalid name: name is required")
 	}
-	if s.Age < 0 || s.Age > 150 {
-		return fmt.Errorf("invalid age: 0 !< %d !< 150", s.Age)
+	if s.Age < MinAge || s.Age > MaxAge {
+		return fmt.Errorf("invalid age: must be between %d and %d, got %d", MinAge, MaxAge, s.Age)
 	}
-	if s.Score < 0 || s.Score > 100 {
-		return fmt.Errorf("invalid score: 0 !< %d !< 100", s.Score)
+	if s.Score < MinScore || s.Score > MaxScore {
+		return fmt.Errorf("invalid score: must be between %d and %d, got %d", MinScore, MaxScore, s.Score)
 	}
 	return nil
 }

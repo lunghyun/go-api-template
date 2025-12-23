@@ -1,180 +1,92 @@
-# Restapi 구현
-## 목표
-RESTful API를 알아보자. 그리고 api 서버 만들기
-## 내용
-- Restful api 정의
-- restful api 서버 만들기
-- 웹 서버 발전 과정
-- gin으로 서버 만들기
+# go-api-template
 
-## Restful api란?
-REST는 자원을 이름으로 구분, 자원 상태를 주고 받는 소프트웨어 아키텍처
-Restful api는 rest 규약을 따르는 api를 말함
-웹서버에서는 url과 http 메서드로 데이터와 동작을 정의하는 방식을 의미
+다양한 아키텍처 패턴으로 구현된 Go REST API 템플릿 모음
 
-## 효과
-- url 과 메서드를 사용해 데이터, 동작 정의 -> 동일한 방식으로 처리
-- fe, be가 분리 -> restapi가 보편화, 데이터 프로바이더로써 웹 서버 역할이 중요
-- restful api를 사용 -> 여러 서버가 동일한 인터페이스로 통신
+## 개요
 
-# 과정
-1. gorilla/mux 같은 restful api 웹서버 지원 패키지 설치
-2. restful api에 맞추서 웹 핸들러 함수 정의
-3. restful api 테스트 코드
-4. 웹 브라우저로 데이터 조회
+같은 기능(학생 관리 CRUD)을 여러 아키텍처 패턴으로 구현한 학습용 템플릿 프로젝트입니다.
+각 브랜치가 하나의 아키텍처 패턴을 보여주며, 프로젝트 시작점으로 활용할 수 있습니다.
 
-## 대충
-GET /student
-GET /student/id
-POST /student/id
-DELETE /student/id
+## 브랜치 구조
 
-# 시작
-- 이전보다 간단하게 패키지를 써보자잉
-- gorilla/mux → gin으로 전환
+- `main`: 프로젝트 개요 및 문서 (코드 없음)
+- `layered`: 3-tier 레이어드 아키텍처 (Handler → Service → Repository)
+- (향후 추가 예정) `clean`, `hexagonal`, `ddd` 등
 
----
+## 기술 스택
 
-## 프로젝트 구조
+- **Language:** Go 1.25
+- **Web Framework:** Gin
+- **Storage:** In-Memory (map 기반)
+- **Testing:** testify/assert
 
-```
-mustHaveGoRest/
-├── main.go              # 서버 시작점
-├── app.go               # 라우터 설정
-├── main_test.go         # 통합 테스트
-└── student/             # student 도메인
-    ├── model.go         # Student 구조체, JSON 태그
-    ├── repository.go    # 데이터 저장소 (메모리)
-    ├── handler.go       # HTTP 핸들러
-    └── routes.go        # 라우팅 등록
-```
+## 기능
 
----
+학생 관리 REST API (CRUD)
 
-## 실행 플로우
+- `GET /students` - 전체 학생 목록 조회
+- `GET /students/:id` - 특정 학생 조회
+- `POST /students` - 학생 생성
+- `PUT /students/:id` - 학생 수정
+- `DELETE /students/:id` - 학생 삭제
 
-### 1. 서버 시작 (main.go → app.go)
-```
-main()
-  ↓
-MakeWebHandler()
-  ↓ gin.Default()
-gin.Engine 생성 (로깅, 복구 미들웨어 포함)
-  ↓
-student 패키지 import
-  ↓
-init() 자동 실행 (데이터 초기화)
-  ↓
-RegisterRoutes() (라우팅 등록)
-  ↓
-engin.Run(":8080") - 서버 시작
-```
+## 사용법
 
-### 2. 요청 처리 흐름
-```
-클라이언트 요청 (예: GET /students/1)
-  ↓
-Gin Router (URL 패턴 매칭)
-  ↓
-Middleware (로깅, 인증 등)
-  ↓
-Handler (GetStudentHandler)
-  ↓
-Repository (students 데이터 조회)
-  ↓
-JSON 응답 반환
-```
+각 브랜치를 체크아웃하여 실행:
 
----
-
-## Gorilla Mux → Gin 전환: 추상화 비교
-
-### Gorilla Mux (저수준)
-- Go 표준 라이브러리(`net/http`) 위에 라우팅만 추가
-- **코드 예시**:
-  ```go
-  func Handler(w http.ResponseWriter, r *http.Request) {
-      w.WriteHeader(http.StatusOK)
-      w.Header().Set("Content-Type", "application/json")
-      json.NewEncoder(w).Encode(data)  // 3단계
-  }
-  ```
-
-### Gin (고수준)
-- 웹 프레임워크 - 많은 기능 자동화
-- **코드 예시**:
-  ```go
-  func Handler(c *gin.Context) {
-      c.JSON(http.StatusOK, data)  // 1단계
-  }
-  ```
-
-### 추상화 수준 비교
-
-| 항목 | Gorilla Mux | Gin                             |
-|------|-------------|---------------------------------|
-| **요청/응답** | `ResponseWriter`, `Request` 분리 | `Context` 하나로 통합                |
-| **JSON 처리** | 수동 (`json.Encoder`, 헤더 설정) | 자동 (`c.JSON()`)                 |
-| **파라미터 바인딩** | 수동 파싱 + 검증 | `ShouldBindJSON()` 자동           |
-| **라우팅** | `.HandleFunc().Methods()` | `.GET()`, `.POST()`             |
-| **에러 처리** | `WriteHeader()` | `c.JSON()`, `AbortWithStatus()` |
-| **미들웨어** | 수동 구현 필요 | 로깅/복구 기본 제공                     |
-| **성능** | 보통 | 비교적 빠름                          |
-
-### 코드 라인 수 비교 (예: POST 핸들러)
-
-**Gorilla Mux: ~15줄**
-```go
-func PostHandler(w http.ResponseWriter, r *http.Request) {
-    var student Student
-    err := json.NewDecoder(r.Body).Decode(&student)
-    if err != nil {
-        w.WriteHeader(http.StatusBadRequest)
-        return
-    }
-    lastId++
-    student.Id = lastId
-    students[lastId] = student
-    w.WriteHeader(http.StatusOK)
-}
-```
-
-**Gin: ~10줄**
-```go
-func PostStudentHandler(c *gin.Context) {
-    var student Student
-    if err := c.ShouldBindJSON(&student); err != nil {
-        c.JSON(http.StatusBadRequest, err.Error())
-        return
-    }
-    lastId++
-    student.Id = lastId
-    students[lastId] = student
-    c.String(http.StatusCreated, "Success to add id: %d", lastId)
-}
-```
-
-### 결론
-- **Gorilla Mux**: 표준 라이브러리에 가까움
-- **Gin**: 간단
-- **추상화 정도**: gin이 간결
-
----
-
-## 테스트 실행
 ```bash
-# 모든 테스트 실행
-go test ./... -v
+# layered 브랜치로 이동
+git checkout layered
 
-# 커버리지 확인
-go test ./... -cover
+# 의존성 설치
+go mod download
 
-# 그냥 통합 테스트
-go test
+# 실행
+go run main.go
+
+# 테스트
+go test -v
 ```
 
-## 서버 실행
-```bash
-go run .
+## 아키텍처 패턴 비교
+
+### Layered Architecture (3-Tier)
+- **구조:** Handler → Service → Repository
+- **특징:** 전통적인 3계층 구조, 간단하고 직관적
+- **적합:** 중소규모 CRUD API, 빠른 개발
+
+### (향후 추가 예정)
+- **Clean Architecture**: 의존성 역전, 도메인 중심
+- **Hexagonal Architecture**: 포트와 어댑터 패턴
+- **DDD**: 도메인 주도 설계
+
+## 프로젝트 구조 (layered 브랜치)
+
+```
+.
+├── main.go              # 애플리케이션 진입점
+├── app.go               # 의존성 주입 및 초기화
+├── student/             # 학생 도메인
+│   ├── model.go         # 도메인 모델 및 검증
+│   ├── repository.go    # 데이터 접근 계층
+│   ├── service.go       # 비즈니스 로직 계층
+│   ├── handler.go       # HTTP 핸들러
+│   └── routes.go        # 라우팅 등록
+└── docs/                # 문서
 ```
 
+## Go 관용구 적용
+
+- Interface 기반 의존성 주입
+- 명시적 에러 반환 패턴
+- `sort.Interface` 구현
+- `sync.RWMutex`를 통한 동시성 제어
+- 도메인 모델 검증 (`Validate()` 메서드)
+
+## 라이선스
+
+MIT
+
+## 기여
+
+이슈 및 PR 환영합니다!

@@ -14,18 +14,18 @@ type Repository interface {
 
 type memoryRepository struct {
 	students map[int]Student
-	lastId   int
+	lastID   int
 	mutex    sync.RWMutex
 }
 
 func NewMemRepository() Repository {
 	repo := &memoryRepository{
 		students: make(map[int]Student),
-		lastId:   2,
+		lastID:   2,
 	}
 	// 초기 데이터
-	repo.students[1] = Student{1, "aaa", 16, 87}
-	repo.students[2] = Student{2, "bbb", 18, 98}
+	repo.students[1] = Student{ID: 1, Name: "aaa", Age: 16, Score: 87}
+	repo.students[2] = Student{ID: 2, Name: "bbb", Age: 18, Score: 98}
 	return repo
 }
 
@@ -63,14 +63,14 @@ func (r *memoryRepository) Save(s Student) Student {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	// Create id가 비어있을 경우 생성(id == 0) -> id 값 생성하여 lastId로 수정
-	if _, exists := r.students[s.Id]; !exists {
-		r.lastId++
-		s.Id = r.lastId
+	// Create id가 비어있을 경우 생성(id == 0) -> id 값 생성하여 lastID로 수정
+	if _, exists := r.students[s.ID]; !exists {
+		r.lastID++
+		s.ID = r.lastID
 	}
 
 	// Update id에 해당하는 키가 있을 경우 수정
-	r.students[s.Id] = s
+	r.students[s.ID] = s
 	return s
 }
 
