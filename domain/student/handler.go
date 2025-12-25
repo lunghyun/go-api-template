@@ -40,19 +40,27 @@ func (h *Handler) GetStudentHandler(c *gin.Context) {
 
 // PostStudentHandler 학생 추가 핸들러
 func (h *Handler) PostStudentHandler(c *gin.Context) {
-	var student Student
-	if err := c.ShouldBindJSON(&student); err != nil {
+	var req PostStudentRequest
+
+	// 1. req에 Json 바인딩 + validate in binding tag
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	// 2, DTO -> Student 변환
+	student := req.ToStudent()
+
+	// 3. 서비스 호출
 	created, err := h.service.CreateStudent(student)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	c.JSON(http.StatusCreated, created)
 }
 
+// PutStudentHandler 학생 수정 핸들러
 func (h *Handler) PutStudentHandler(c *gin.Context) {
 	idStr := c.Params.ByName("id")
 	id, err := strconv.Atoi(idStr)
@@ -60,16 +68,20 @@ func (h *Handler) PutStudentHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	var student Student
-	if err := c.ShouldBindJSON(&student); err != nil {
+
+	var req UpdateStudentRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	student := req.ToStudent()
 	updated, err := h.service.UpdateStudent(id, student)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	c.JSON(http.StatusOK, updated)
 }
 

@@ -31,21 +31,12 @@ func (s *Service) GetStudent(id int) (*Student, error) {
 
 // CreateStudent 학생 생성
 func (s *Service) CreateStudent(student Student) (*Student, error) {
-	if err := student.Validate(); err != nil {
-		return nil, err
-	}
-
-	student.ID = 0
 	created := s.repository.Save(student)
 	return &created, nil
 }
 
 // UpdateStudent 학생 수정
 func (s *Service) UpdateStudent(id int, student Student) (*Student, error) {
-	if err := student.Validate(); err != nil {
-		return nil, err
-	}
-
 	_, err := s.repository.FindById(id)
 	if err != nil {
 		return nil, err

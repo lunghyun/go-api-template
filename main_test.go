@@ -120,3 +120,143 @@ func TestPutStudentHandler(t *testing.T) {
 	assertion.Equal(100, content.Age)
 	assertion.Equal(78, content.Score)
 }
+
+func TestPostStudentHandler_ValidationFail(t *testing.T) {
+	assertion := assert.New(t)
+	engin := MakeWebHandler()
+
+	// 1. Name 누락 (required)
+	res := httptest.NewRecorder()
+	req := httptest.NewRequest("POST", "/students",
+		strings.NewReader(`{"age":20,"score":90}`))
+	engin.ServeHTTP(res, req)
+	assertion.Equal(http.StatusBadRequest, res.Code)
+
+	var errorResp map[string]string
+	err := json.NewDecoder(res.Body).Decode(&errorResp)
+	assertion.Nil(err)
+	assertion.Contains(errorResp["error"], "Name")
+	t.Logf("[Name 누락] 에러: %s", errorResp["error"])
+
+	// 2. Age 범위 초과 (max=100)
+	res = httptest.NewRecorder()
+	req = httptest.NewRequest("POST", "/students",
+		strings.NewReader(`{"name":"test","age":101,"score":90}`))
+	engin.ServeHTTP(res, req)
+	assertion.Equal(http.StatusBadRequest, res.Code)
+
+	errorResp = map[string]string{}
+	err = json.NewDecoder(res.Body).Decode(&errorResp)
+	assertion.Nil(err)
+	assertion.Contains(errorResp["error"], "Age")
+	t.Logf("[Age 범위 초과] 에러: %s", errorResp["error"])
+
+	// 3. Age 최소값 미만 (min=1)
+	res = httptest.NewRecorder()
+	req = httptest.NewRequest("POST", "/students",
+		strings.NewReader(`{"name":"test","age":0,"score":90}`))
+	engin.ServeHTTP(res, req)
+	assertion.Equal(http.StatusBadRequest, res.Code)
+
+	errorResp = map[string]string{}
+	err = json.NewDecoder(res.Body).Decode(&errorResp)
+	assertion.Nil(err)
+	assertion.Contains(errorResp["error"], "Age")
+	t.Logf("[Age 최소값 미만] 에러: %s", errorResp["error"])
+
+	// 4. Score 범위 초과 (max=100)
+	res = httptest.NewRecorder()
+	req = httptest.NewRequest("POST", "/students",
+		strings.NewReader(`{"name":"test","age":20,"score":101}`))
+	engin.ServeHTTP(res, req)
+	assertion.Equal(http.StatusBadRequest, res.Code)
+
+	errorResp = map[string]string{}
+	err = json.NewDecoder(res.Body).Decode(&errorResp)
+	assertion.Nil(err)
+	assertion.Contains(errorResp["error"], "Score")
+	t.Logf("[Score 범위 초과] 에러: %s", errorResp["error"])
+
+	// 5. Score 음수 (min=0)
+	res = httptest.NewRecorder()
+	req = httptest.NewRequest("POST", "/students",
+		strings.NewReader(`{"name":"test","age":20,"score":-1}`))
+	engin.ServeHTTP(res, req)
+	assertion.Equal(http.StatusBadRequest, res.Code)
+
+	errorResp = map[string]string{}
+	err = json.NewDecoder(res.Body).Decode(&errorResp)
+	assertion.Nil(err)
+	assertion.Contains(errorResp["error"], "Score")
+	t.Logf("[Score 음수] 에러: %s", errorResp["error"])
+}
+
+func TestPutStudentHandler_ValidationFail(t *testing.T) {
+	assertion := assert.New(t)
+	engin := MakeWebHandler()
+
+	// 1. Name 누락 (required)
+	res := httptest.NewRecorder()
+	req := httptest.NewRequest("PUT", "/students/1",
+		strings.NewReader(`{"age":20,"score":90}`))
+	engin.ServeHTTP(res, req)
+	assertion.Equal(http.StatusBadRequest, res.Code)
+
+	var errorResp map[string]string
+	err := json.NewDecoder(res.Body).Decode(&errorResp)
+	assertion.Nil(err)
+	assertion.Contains(errorResp["error"], "Name")
+	t.Logf("[PUT Name 누락] 에러: %s", errorResp["error"])
+
+	// 2. Age 범위 초과 (max=100)
+	res = httptest.NewRecorder()
+	req = httptest.NewRequest("PUT", "/students/1",
+		strings.NewReader(`{"name":"test","age":101,"score":90}`))
+	engin.ServeHTTP(res, req)
+	assertion.Equal(http.StatusBadRequest, res.Code)
+
+	errorResp = map[string]string{}
+	err = json.NewDecoder(res.Body).Decode(&errorResp)
+	assertion.Nil(err)
+	assertion.Contains(errorResp["error"], "Age")
+	t.Logf("[PUT Age 범위 초과] 에러: %s", errorResp["error"])
+
+	// 3. Age 음수 (min=1)
+	res = httptest.NewRecorder()
+	req = httptest.NewRequest("PUT", "/students/1",
+		strings.NewReader(`{"name":"test","age":-1,"score":90}`))
+	engin.ServeHTTP(res, req)
+	assertion.Equal(http.StatusBadRequest, res.Code)
+
+	errorResp = map[string]string{}
+	err = json.NewDecoder(res.Body).Decode(&errorResp)
+	assertion.Nil(err)
+	assertion.Contains(errorResp["error"], "Age")
+	t.Logf("[PUT Age 음수] 에러: %s", errorResp["error"])
+
+	// 4. Score 범위 초과 (max=100)
+	res = httptest.NewRecorder()
+	req = httptest.NewRequest("PUT", "/students/1",
+		strings.NewReader(`{"name":"test","age":99,"score":101}`))
+	engin.ServeHTTP(res, req)
+	assertion.Equal(http.StatusBadRequest, res.Code)
+
+	errorResp = map[string]string{}
+	err = json.NewDecoder(res.Body).Decode(&errorResp)
+	assertion.Nil(err)
+	assertion.Contains(errorResp["error"], "Score")
+	t.Logf("[PUT Score 범위 초과] 에러: %s", errorResp["error"])
+
+	// 5. Score 음수 (min=0)
+	res = httptest.NewRecorder()
+	req = httptest.NewRequest("PUT", "/students/1",
+		strings.NewReader(`{"name":"test","age":99,"score":-1}`))
+	engin.ServeHTTP(res, req)
+	assertion.Equal(http.StatusBadRequest, res.Code)
+
+	errorResp = map[string]string{}
+	err = json.NewDecoder(res.Body).Decode(&errorResp)
+	assertion.Nil(err)
+	assertion.Contains(errorResp["error"], "Score")
+	t.Logf("[PUT Score 음수] 에러: %s", errorResp["error"])
+}
